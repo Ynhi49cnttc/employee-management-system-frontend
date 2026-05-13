@@ -43,7 +43,9 @@ src/
 ├── types/              # Định nghĩa TypeScript Interfaces
 ├── utils/              # Các hàm helper (Format date, format money...)
 └── App.tsx             # Cấu hình Routing và Provider chính
-🚀 Hướng dẫn cài đặt
+```
+
+## 🚀 Hướng dẫn cài đặt
 1. Cài đặt môi trường
 Đảm bảo máy tính của bạn đã cài đặt Node.js (Phiên bản 16 trở lên).
 
