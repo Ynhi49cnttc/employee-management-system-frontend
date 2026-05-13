@@ -54,6 +54,7 @@ Tạo file .env tại thư mục gốc của dự án:
 
 Đoạn mã
 VITE_API_URL=http://localhost:5000/api
+
 3. Khởi chạy ứng dụng
 Bash
 # Cài đặt các thư viện cần thiết
@@ -64,6 +65,8 @@ npm run dev
 
 # Xây dựng bản build cho sản phẩm thực tế
 npm run build
+
+---
 
 👤 Thông tin thực hiện
 Nhóm: 5
@@ -77,5 +80,7 @@ Hồ Đăng Khoa
 Nguyễn Thanh Tiền
 
 Đơn vị: Khoa Công nghệ thông tin - Đại học Sư phạm TP.HCM (HCMUE)
+
+---
 
 Dự án phục vụ mục đích đồ án học phần: Bảo mật cơ sở dữ liệu.
