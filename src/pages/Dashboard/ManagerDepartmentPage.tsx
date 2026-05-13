@@ -97,8 +97,8 @@ export default function ManagerDepartmentPage() {
         const payload = Array.isArray(response.data) ? response.data : response.data?.data || [];
         setEmployees(Array.isArray(payload) ? payload : []);
       } catch (err) {
-        console.error('Lỗi tải danh sách nhân sự phòng ban:', err);
-        setError('Không thể tải danh sách nhân sự phòng ban. Vui lòng thử lại sau.');
+        console.error('Lỗi tải danh sách nhân viên phòng ban:', err);
+        setError('Không thể tải danh sách nhân viên phòng ban. Vui lòng thử lại sau.');
       } finally {
         setLoading(false);
       }
@@ -152,7 +152,7 @@ export default function ManagerDepartmentPage() {
         <p className="text-sm font-bold uppercase tracking-[0.2em] text-blue-600">Manager Workspace</p>
         <h2 className="text-3xl font-black tracking-tight text-slate-950">Quản lý phòng ban</h2>
         <p className="max-w-3xl text-sm text-slate-500">
-          Theo dõi hồ sơ, thông tin liên hệ và mức lương của nhân sự thuộc phòng ban mình quản lý.
+          Theo dõi hồ sơ, thông tin liên hệ và mức lương của nhân viên thuộc phòng ban mình quản lý.
         </p>
       </div>
 
@@ -190,9 +190,9 @@ export default function ManagerDepartmentPage() {
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="text-lg font-black text-slate-900">Danh sách nhân sự</h3>
+            <h3 className="text-lg font-black text-slate-900">Danh sách nhân viên</h3>
             <p className="text-sm text-slate-500">
-              Hiển thị {currentItems.length} / {filteredData.length} nhân sự phù hợp.
+              Hiển thị {currentItems.length} / {filteredData.length} nhân viên phù hợp.
             </p>
           </div>
 
@@ -288,7 +288,7 @@ export default function ManagerDepartmentPage() {
           {filteredData.length === 0 && (
             <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
               <Users className="mb-3 h-12 w-12 text-slate-300" />
-              <p className="font-black text-slate-800">Không tìm thấy nhân sự phù hợp</p>
+              <p className="font-black text-slate-800">Không tìm thấy nhân viên phù hợp</p>
               <p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa tìm kiếm.</p>
             </div>
           )}
@@ -299,7 +299,7 @@ export default function ManagerDepartmentPage() {
             <p className="text-sm text-slate-500">
               Hiển thị <span className="font-black text-slate-800">{startIndex + 1}</span> -{' '}
               <span className="font-black text-slate-800">{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> trên{' '}
-              <span className="font-black text-slate-800">{filteredData.length}</span> nhân sự
+              <span className="font-black text-slate-800">{filteredData.length}</span> nhân viên
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -414,7 +414,7 @@ function EmployeeDetailModal({ employee, onClose }: { employee: EmployeeRecord; 
             <p className="text-xs font-black uppercase tracking-widest text-emerald-700">Mức lương cơ bản</p>
             <p className="mt-1 text-3xl font-black text-emerald-700">{formatMoney(salary)}</p>
             <p className="mt-2 text-sm font-medium text-emerald-700/80">
-              Chỉ quản lý phòng ban được xem thông tin lương của nhân sự trong phòng.
+              Chỉ quản lý phòng ban được xem thông tin lương của nhân viên trong phòng.
             </p>
           </div>
         </div>

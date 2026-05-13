@@ -70,7 +70,7 @@ export default function PeersPage() {
         const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
         setPeers(Array.isArray(data) ? data : []);
       } catch (err) {
-        setError('Không thể tải danh sách nhân sự cùng phòng. Vui lòng thử lại sau.');
+        setError('Không thể tải danh sách nhân viên cùng phòng. Vui lòng thử lại sau.');
       } finally {
         setLoading(false);
       }
@@ -127,7 +127,7 @@ export default function PeersPage() {
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
             <Users size={14} /> Danh bạ nội bộ
           </div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">Nhân sự cùng phòng</h2>
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">Nhân viên cùng phòng</h2>
           <p className="mt-1 text-sm text-slate-500">
             Xem thông tin liên hệ cơ bản của đồng nghiệp trong cùng phòng ban. Thông tin lương được ẩn theo đúng phân quyền.
           </p>
@@ -165,9 +165,9 @@ export default function PeersPage() {
         <div className="border-b border-slate-100 bg-slate-50/70 px-6 py-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="font-black text-slate-900">Danh sách nhân sự</h3>
+              <h3 className="font-black text-slate-900">Danh sách nhân viên</h3>
               <p className="text-xs font-medium text-slate-500">
-                Hiển thị {currentItems.length} / {filteredData.length} nhân sự phù hợp
+                Hiển thị {currentItems.length} / {filteredData.length} nhân viên phù hợp
               </p>
             </div>
             <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-500 ring-1 ring-slate-200">
@@ -269,7 +269,7 @@ export default function PeersPage() {
             <p className="text-sm text-slate-500">
               Hiển thị <span className="font-bold text-slate-700">{startIndex + 1}</span> -{' '}
               <span className="font-bold text-slate-700">{Math.min(startIndex + itemsPerPage, filteredData.length)}</span> trên{' '}
-              <span className="font-bold text-slate-700">{filteredData.length}</span> nhân sự
+              <span className="font-bold text-slate-700">{filteredData.length}</span> nhân viên
             </p>
             <div className="flex items-center gap-2">
               <PaginationButton disabled={currentPage === 1} onClick={() => goToPage(currentPage - 1)}>

@@ -20,7 +20,7 @@ export function Header() {
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 shadow-sm md:px-6">
       <div>
         <p className="text-xs font-black uppercase tracking-widest text-blue-600">Secure EMS</p>
-        <h1 className="text-base font-black text-slate-900 md:text-lg">Hệ thống quản lý nhân sự</h1>
+        <h1 className="text-base font-black text-slate-900 md:text-lg">Hệ thống quản lý nhân viên</h1>
       </div>
 
       <div className="flex items-center gap-3">

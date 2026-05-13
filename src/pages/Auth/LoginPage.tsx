@@ -32,7 +32,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200">
         <div className="bg-blue-600 px-8 py-7 text-center">
           <h1 className="text-2xl font-bold leading-tight text-white">
-            Hệ thống Quản lý Nhân sự
+            Hệ thống Quản lý Nhân viên
           </h1>
           <p className="mt-2 text-sm text-blue-100">Đăng nhập để tiếp tục</p>
         </div>

@@ -251,7 +251,7 @@ export default function AccountsPage() {
         <div>
           <h2 className="text-2xl font-black text-slate-900">Quản lý tài khoản hệ thống</h2>
           <p className="mt-1 text-sm text-slate-500">
-            Cấp quyền, thu hồi quyền và khóa/mở tài khoản đăng nhập cho nhân sự
+            Cấp quyền, thu hồi quyền và khóa/mở tài khoản đăng nhập cho nhân viên
           </p>
         </div>
 

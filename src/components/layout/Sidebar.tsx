@@ -21,7 +21,7 @@ const ROLE_TABS: Record<string, string[]> = {
 
 const MENU_ITEMS = [
   { path: 'profile', label: 'Hồ sơ cá nhân', icon: User },
-  { path: 'peers', label: 'Nhân sự cùng phòng', icon: Users },
+  { path: 'peers', label: 'Nhân viên cùng phòng', icon: Users },
   { path: 'department', label: 'Quản lý phòng ban', icon: LayoutDashboard },
   { path: 'salary', label: 'Bảng lương', icon: Calculator },
   { path: 'hr-management', label: 'Quản lý nhân sự', icon: WalletCards },
