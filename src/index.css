@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    /* Dùng font-weight 400 cho văn bản thông thường để bớt đậm */
+    @apply text-slate-700 bg-slate-50 font-normal antialiased;
+  }
+
+  /* Giảm bớt độ đậm của các tiêu đề */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-slate-600 tracking-tight;
+  }
+}
