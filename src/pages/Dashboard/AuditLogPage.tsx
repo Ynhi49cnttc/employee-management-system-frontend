@@ -134,7 +134,7 @@ export default function AuditLogPage() {
       const actor = String(getValue(log, ['TenDangNhap', 'actorName', 'NguoiThucHien', 'username'], '')).toLowerCase();
       const action = String(getValue(log, ['HanhDong', 'action', 'Action'], '')).toLowerCase();
       const content = String(getValue(log, ['NoiDung', 'description', 'ChiTiet', 'content'], '')).toLowerCase();
-      const target = String(getValue(log, ['DoiTuongAnhHuong', 'targetName', 'targetId'], '')).toLowerCase();
+      const target = String(getValue(log, ['TargetName', 'TargetId', 'DoiTuongAnhHuong', 'targetName', 'targetId'], '')).toLowerCase();
 
       const matchSearch = actor.includes(search) || action.includes(search) || content.includes(search) || target.includes(search);
 
@@ -242,7 +242,7 @@ export default function AuditLogPage() {
               const actor = getValue(log, ['TenDangNhap', 'actorName', 'NguoiThucHien', 'username'], 'Không xác định');
               const content = getValue(log, ['NoiDung', 'description', 'ChiTiet', 'content'], 'Không có mô tả');
               const time = getValue(log, ['ThoiGian', 'createdAt', 'CreatedAt', 'timestamp'], '');
-              const target = getValue(log, ['DoiTuongAnhHuong', 'targetName', 'targetId'], '');
+              const target = getValue(log, ['TargetName', 'TargetId', 'DoiTuongAnhHuong', 'targetName', 'targetId'], '');
 
               return (
                 <tr key={getLogId(log, index)} className="transition hover:bg-slate-50/70">
@@ -317,8 +317,7 @@ function AuditDetailModal({ log, onClose }: { log: AuditLog; onClose: () => void
   const actor = getValue(log, ['TenDangNhap', 'actorName', 'NguoiThucHien', 'username'], 'Không xác định');
   const content = getValue(log, ['NoiDung', 'description', 'ChiTiet', 'content'], 'Không có mô tả');
   const time = getValue(log, ['ThoiGian', 'createdAt', 'CreatedAt', 'timestamp'], '');
-  const target = getValue(log, ['DoiTuongAnhHuong', 'targetName', 'targetId'], 'Chưa cập nhật');
-  const ipAddress = getValue(log, ['IpAddress', 'ipAddress', 'IP'], 'Chưa cập nhật');
+  const target = getValue(log, ['TargetName', 'TargetId', 'DoiTuongAnhHuong', 'targetName', 'targetId'], 'Chưa cập nhật');
   const tableName = getValue(log, ['TableName', 'tableName', 'BangDuLieu'], 'Chưa cập nhật');
   const logId = getValue(log, ['MaLog', 'id', 'LogId', 'logId'], '---');
 
@@ -367,7 +366,6 @@ function AuditDetailModal({ log, onClose }: { log: AuditLog; onClose: () => void
             <DetailItem label="Đối tượng ảnh hưởng" value={target} icon={<AlertTriangle size={14} />} />
             <DetailItem label="Thời gian" value={formatDateTime(time)} icon={<CalendarClock size={14} />} />
             <DetailItem label="Bảng dữ liệu" value={tableName} icon={<Database size={14} />} />
-            <DetailItem label="Địa chỉ IP" value={ipAddress} icon={<ShieldCheck size={14} />} />
           </div>
 
           <div className="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">

@@ -21,6 +21,9 @@ import {
   Lock,
   Unlock,
   BadgeCheck,
+  Eye,
+  CheckCircle2, 
+  UserMinus,
 } from 'lucide-react';
 
 type Employee = Record<string, any>;
@@ -176,18 +179,28 @@ export default function HRManagementPage() {
     e.preventDefault();
 
     try {
+      const cleanData = { ...formData };
+      
+      if (cleanData.Luong) {
+        cleanData.Luong = Number(cleanData.Luong);
+      } else if (cleanData.luongCoBan) {
+         cleanData.Luong = Number(cleanData.luongCoBan);
+      } else {
+        cleanData.Luong = null;
+      }
+
       if (editingEmployee) {
         const maNV = getValue(editingEmployee, ['MaNV', 'maNV'], '');
-        const name = getValue(formData, ['HoTen', 'hoTen'], 'nhân viên');
+        const name = getValue(cleanData, ['HoTen', 'hoTen'], 'nhân viên');
         const endpoint = isHRM ? `/hr/update/${maNV}` : `/hr-staff/update/${maNV}`;
 
-        await api.put(endpoint, formData);
+        await api.put(endpoint, cleanData); 
         alert(`Cập nhật thông tin nhân viên ${name} thành công!`);
       } else {
         const endpoint = isHRM ? '/hr/add' : '/hr-staff/add';
-        const name = getValue(formData, ['HoTen', 'hoTen'], 'nhân viên mới');
+        const name = getValue(cleanData, ['HoTen', 'hoTen'], 'nhân viên mới');
         
-        await api.post(endpoint, formData);
+        await api.post(endpoint, cleanData);
         alert(`Đã thêm thành công nhân viên ${name} vào danh sách.`);
       }
 
@@ -250,7 +263,6 @@ export default function HRManagementPage() {
         <StatCard label="Tổng nhân sự" value={employees.length} icon={<User size={20} />} />
         <StatCard label="Đang hiển thị" value={filteredEmployees.length} icon={<BadgeCheck size={20} />} />
         <StatCard label="HR có quyền" value={isHRM ? 'HRM' : 'HR'} icon={<Shield size={20} />} />
-        <StatCard label="Dữ liệu" value="API hiện có" icon={<Hash size={20} />} />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -273,6 +285,7 @@ export default function HRManagementPage() {
               <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">Liên hệ</th>
               <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">Phòng ban</th>
               <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">Vai trò</th>
+              <th className="px-6 py-4 text-xs font-black uppercase tracking-wider text-slate-500">Trạng thái</th>
               <th className="px-6 py-4 text-right text-xs font-black uppercase tracking-wider text-slate-500">Thao tác</th>
             </tr>
           </thead>
@@ -284,6 +297,8 @@ export default function HRManagementPage() {
               const phone = getValue(employee, ['SoDienThoai', 'soDienThoai'], '---');
               const department = getValue(employee, ['TenPhongBan', 'phongBanTen', 'MaPhong'], '---');
               const role = getValue(employee, ['MaVaiTro', 'role'], 'EMP');
+              const status = getValue(employee, ['TrangThai', 'trangThai'], 'ACTIVE');
+              const isLocked = Boolean(getValue(employee, ['IsLocked', 'isLocked', 'KhoaTaiKhoan'], false));
 
               return (
                 <tr key={getValue(employee, ['MaNV', 'maNV'])} className="transition hover:bg-slate-50/70">
@@ -327,13 +342,36 @@ export default function HRManagementPage() {
                   </td>
 
                   <td className="px-6 py-4">
+                    <div className="flex flex-col gap-1.5 items-start">
+                      {status === 'ACTIVE' ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                          <CheckCircle2 size={14} />
+                          Đang làm việc
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2.5 py-1 text-xs font-black text-slate-500 ring-1 ring-slate-200">
+                          <UserMinus size={14} />
+                          Đã nghỉ việc
+                        </span>
+                      )}
+
+                      {isLocked && (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-500">
+                          <Lock size={12} />
+                          Tài khoản đang khóa
+                        </span>
+                      )}
+                    </div>
+                  </td>
+
+                  <td className="px-6 py-4">
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => setSelectedEmployee(employee)}
                         className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100"
                         title="Xem chi tiết"
                       >
-                        <Shield size={18} />
+                        <Eye size={18} />
                       </button>
 
                       <button
@@ -378,6 +416,7 @@ export default function HRManagementPage() {
           onSubmit={handleSubmit}
           onClose={() => setIsModalOpen(false)}
           isHRM={isHRM}
+          existingEmployees={employees} 
         />
       )}
     </div>
@@ -485,6 +524,7 @@ function EmployeeFormModal({
   onSubmit,
   onClose,
   isHRM,
+  existingEmployees, 
 }: {
   isEditing: boolean;
   formData: Record<string, any>;
@@ -492,9 +532,133 @@ function EmployeeFormModal({
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
   isHRM: boolean;
+  existingEmployees: Employee[];
 }) {
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // Danh sách phòng ban cứng (Có thể gọi từ API nếu sau này mở rộng)
+  const departments = [
+    { value: 'P001', label: 'Phòng Kỹ thuật / IT' },
+    { value: 'P002', label: 'Phòng Nhân sự' },
+    { value: 'P003', label: 'Phòng Hành chính' },
+    { value: 'P004', label: 'Phòng Kinh doanh' },
+    { value: 'P005', label: 'Phòng Tài chính' },
+  ];
+
+  useEffect(() => {
+    if (!isEditing && existingEmployees.length > 0 && !formData.MaNV) {
+      const employeeNumbers = existingEmployees
+        .map((emp) => {
+          const maNV = getValue(emp, ['MaNV', 'maNV'], '');
+          const numMatch = maNV.match(/\d+/);
+          return numMatch ? parseInt(numMatch[0], 10) : 0;
+        })
+        .filter((num) => !isNaN(num));
+
+      const maxNumber = employeeNumbers.length > 0 ? Math.max(...employeeNumbers) : 0;
+      const nextNumber = maxNumber + 1;
+      const newMaNV = `NV${String(nextNumber).padStart(3, '0')}`; // Tạo định dạng NV0xx
+      
+      setFormData((prev) => ({ ...prev, MaNV: newMaNV }));
+    }
+  }, [isEditing, existingEmployees, formData.MaNV, setFormData]);
+
+
   const setField = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+    setErrorMsg(''); 
+  };
+
+  const handleDepartmentChange = (maPhong: string) => {
+    const selectedDept = departments.find((d) => d.value === maPhong);
+    setFormData((prev) => ({
+      ...prev,
+      MaPhong: maPhong,
+      TenPhongBan: selectedDept ? selectedDept.label : '',
+    }));
+    setErrorMsg('');
+  };
+
+  const validateForm = () => {
+    const luong = Number(formData.Luong || formData.luongCoBan || 0);
+    if (luong < 0) {
+      setErrorMsg('Mức lương không được phép là số âm.');
+      return false;
+    }
+
+    const ngaySinhStr = formData.NgaySinh || formData.ngaySinh;
+    if (ngaySinhStr) {
+      const dob = new Date(ngaySinhStr);
+      const today = new Date();
+
+      if (dob > today) {
+        setErrorMsg('Ngày sinh không hợp lệ (Không thể chọn ngày ở tương lai).');
+        return false;
+      }
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+
+      if (age < 18) {
+        setErrorMsg('Nhân viên chưa đủ 18 tuổi để ký hợp đồng lao động chính thức.');
+        return false;
+      }
+    }
+
+    const emailStr = String(formData.Email || formData.email || '').trim();
+    if (emailStr) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailStr)) {
+        setErrorMsg('Email không đúng định dạng.');
+        return false;
+      }
+      
+      const isDuplicateEmail = existingEmployees.some((emp) => {
+        const currentMaNV = getValue(formData, ['MaNV', 'maNV'], '');
+        const empMaNV = getValue(emp, ['MaNV', 'maNV'], '');
+        if (isEditing && currentMaNV === empMaNV) return false; 
+        
+        return String(getValue(emp, ['Email', 'email'], '')).toLowerCase() === emailStr.toLowerCase();
+      });
+
+      if (isDuplicateEmail) {
+        setErrorMsg('Email này đã được sử dụng bởi một nhân viên khác trong hệ thống.');
+        return false;
+      }
+    }
+
+    const phoneStr = String(formData.SoDienThoai || formData.soDienThoai || '').trim();
+    if (phoneStr) {
+      const phoneRegex = /^0\d{9}$/;
+      if (!phoneRegex.test(phoneStr)) {
+        setErrorMsg('Số điện thoại không hợp lệ (Phải bao gồm 10 chữ số và bắt đầu bằng số 0).');
+        return false;
+      }
+
+       const isDuplicatePhone = existingEmployees.some((emp) => {
+        const currentMaNV = getValue(formData, ['MaNV', 'maNV'], '');
+        const empMaNV = getValue(emp, ['MaNV', 'maNV'], '');
+        if (isEditing && currentMaNV === empMaNV) return false; 
+        
+        return String(getValue(emp, ['SoDienThoai', 'soDienThoai'], '')) === phoneStr;
+      });
+
+      if (isDuplicatePhone) {
+        setErrorMsg('Số điện thoại này đã được đăng ký cho một nhân viên khác.');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      onSubmit(e);
+    }
   };
 
   return (
@@ -517,10 +681,16 @@ function EmployeeFormModal({
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="max-h-[75vh] overflow-y-auto p-8">
+        {errorMsg && (
+          <div className="mx-8 mt-6 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-600">
+            ⚠ Lỗi: {errorMsg}
+          </div>
+        )}
+
+        <form onSubmit={handleFormSubmit} className="max-h-[75vh] overflow-y-auto p-8 pt-6">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <FormSection title="Thông tin cơ bản" icon={<User size={18} />}>
-              <InputField label="Mã nhân viên" value={formData.MaNV || formData.maNV || ''} onChange={(v) => setField('MaNV', v)} disabled={isEditing} />
+              <InputField label="Mã nhân viên" value={formData.MaNV || formData.maNV || ''} onChange={(v) => setField('MaNV', v)} disabled={true} />
               <InputField label="Họ và tên" value={formData.HoTen || formData.hoTen || ''} onChange={(v) => setField('HoTen', v)} required />
               <SelectField label="Giới tính" value={formData.GioiTinh || formData.gioiTinh || 'NAM'} onChange={(v) => setField('GioiTinh', v)} options={[{ value: 'NAM', label: 'Nam' }, { value: 'NU', label: 'Nữ' }, { value: 'KHAC', label: 'Khác' }]} />
               <InputField label="Ngày sinh" type="date" value={(formData.NgaySinh || formData.ngaySinh || '').toString().split('T')[0]} onChange={(v) => setField('NgaySinh', v)} />
@@ -528,20 +698,24 @@ function EmployeeFormModal({
             </FormSection>
 
             <FormSection title="Liên hệ & định danh" icon={<CreditCard size={18} />}>
-              <InputField label="Email" type="email" value={formData.Email || formData.email || ''} onChange={(v) => setField('Email', v)} />
-              <InputField label="Số điện thoại" value={formData.SoDienThoai || formData.soDienThoai || ''} onChange={(v) => setField('SoDienThoai', v)} />
+              <InputField label="Email" type="email" value={formData.Email || formData.email || ''} onChange={(v) => setField('Email', v)} required/>
+              <InputField label="Số điện thoại" value={formData.SoDienThoai || formData.soDienThoai || ''} onChange={(v) => setField('SoDienThoai', v)} required/>
               <InputField label="CCCD" value={formData.CCCD || formData.cccd || ''} onChange={(v) => setField('CCCD', v)} />
               <InputField label="Mã số thuế" value={formData.MaSoThue || formData.maSoThue || ''} onChange={(v) => setField('MaSoThue', v)} />
             </FormSection>
 
             <FormSection title="Công việc & tài khoản" icon={<Briefcase size={18} />}>
-              <InputField label="Mã phòng ban" value={formData.MaPhong || formData.phongBanId || ''} onChange={(v) => setField('MaPhong', v)} />
-              <InputField label="Tên phòng ban" value={formData.TenPhongBan || formData.phongBanTen || ''} onChange={(v) => setField('TenPhongBan', v)} />
-              <InputField label="Chức vụ" value={formData.ChucVu || formData.chucVuTen || ''} onChange={(v) => setField('ChucVu', v)} />
+              <SelectField 
+                label="Phòng ban" 
+                value={formData.MaPhong || formData.phongBanId || 'P001'} 
+                onChange={handleDepartmentChange} 
+                options={departments} 
+              />
+              <InputField label="Vị trí công việc" value={formData.ChucVu || formData.chucVuTen || ''} onChange={(v) => setField('ChucVu', v)} />
               <SelectField label="Loại nhân viên" value={formData.LoaiNhanVien || formData.loaiNhanVien || 'FULLTIME'} onChange={(v) => setField('LoaiNhanVien', v)} options={[{ value: 'FULLTIME', label: 'Toàn thời gian' }, { value: 'PARTTIME', label: 'Bán thời gian' }, { value: 'INTERN', label: 'Thực tập' }]} />
               <SelectField label="Trạng thái làm việc" value={formData.TrangThai || formData.trangThai || 'ACTIVE'} onChange={(v) => setField('TrangThai', v)} options={[{ value: 'ACTIVE', label: 'Đang làm việc' }, { value: 'INACTIVE', label: 'Đã nghỉ việc' }]} />
               <SelectField label="Vai trò hệ thống" value={formData.MaVaiTro || formData.role || 'EMP'} onChange={(v) => setField('MaVaiTro', v)} disabled={!isHRM} options={[{ value: 'EMP', label: 'Nhân viên' }, { value: 'MAN', label: 'Quản lý' }, { value: 'FIN', label: 'Tài chính' }, { value: 'HR', label: 'Nhân sự' }, { value: 'HRM', label: 'Trưởng phòng nhân sự' }]} />
-              <InputField label="Lương cơ bản" type="number" value={formData.Luong || formData.luongCoBan || ''} onChange={(v) => setField('Luong', v)} />
+              <InputField label="Lương" type="number" value={formData.Luong || formData.luongCoBan || ''} onChange={(v) => setField('Luong', v)} />
             </FormSection>
           </div>
 

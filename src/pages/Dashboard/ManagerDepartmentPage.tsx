@@ -179,7 +179,7 @@ export default function ManagerDepartmentPage() {
           tone="emerald"
         />
         <StatCard
-          title="Quỹ lương cơ bản"
+          title="Quỹ lương"
           value={totalSalary > 0 ? formatMoney(totalSalary) : 'Chưa có dữ liệu'}
           description={departmentName}
           icon={<Wallet size={22} />}
@@ -220,7 +220,7 @@ export default function ManagerDepartmentPage() {
                   <th className="px-5 py-4">Liên hệ</th>
                   <th className="px-5 py-4">Chức vụ</th>
                   <th className="px-5 py-4">Trạng thái</th>
-                  <th className="px-5 py-4">Lương cơ bản</th>
+                  <th className="px-5 py-4">Lương</th>
                   <th className="px-5 py-4 text-right">Chi tiết</th>
                 </tr>
               </thead>
@@ -411,7 +411,7 @@ function EmployeeDetailModal({ employee, onClose }: { employee: EmployeeRecord; 
           </div>
 
           <div className="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-6">
-            <p className="text-xs font-black uppercase tracking-widest text-emerald-700">Mức lương cơ bản</p>
+            <p className="text-xs font-black uppercase tracking-widest text-emerald-700">Mức lương nhân viên</p>
             <p className="mt-1 text-3xl font-black text-emerald-700">{formatMoney(salary)}</p>
             <p className="mt-2 text-sm font-medium text-emerald-700/80">
               Chỉ quản lý phòng ban được xem thông tin lương của nhân viên trong phòng.

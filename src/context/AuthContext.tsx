@@ -16,18 +16,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // HÀM MỚI: Đi lấy thông tin chi tiết (bao gồm Họ Tên) từ Backend
   const getFullProfile = async () => {
     try {
       const res = await api.get('/employee/profile');
-      // Backend trả về mảng hoặc object, mình lấy cái đầu tiên
       const data = Array.isArray(res.data) ? res.data[0] : res.data;
       
       if (data) {
         const fullUser: AuthUser = {
           MaNV: data.MaNV,
-          MaVaiTro: localStorage.getItem('role') || 'EMP', // Lấy role tạm lưu trong máy
-          HoTen: data.HoTen // ĐÂY RỒI! Tên thật ở đây
+          MaVaiTro: localStorage.getItem('role') || 'EMP', 
+          HoTen: data.HoTen 
         };
         setUser(fullUser);
         localStorage.setItem('user', JSON.stringify(fullUser));
@@ -68,7 +66,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.clear(); // Xóa sạch cho gọn
+    localStorage.clear(); 
     setUser(null);
   };
 

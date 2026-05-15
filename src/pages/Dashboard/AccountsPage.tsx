@@ -16,6 +16,7 @@ import {
   History,
   AlertTriangle,
   Crown,
+  Eye,
 } from 'lucide-react';
 
 type Account = Record<string, any>;
@@ -170,9 +171,12 @@ export default function AccountsPage() {
       });
 
       await fetchAccounts();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Không thể cập nhật trạng thái tài khoản');
+      const errorMsg = error.response?.data?.message 
+                    || error.response?.data?.error 
+                    || 'Không thể cập nhật trạng thái tài khoản';
+      alert(`⚠️ Cập nhật trạng thái thất bại:\n\n${errorMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -199,9 +203,12 @@ export default function AccountsPage() {
 
       setRoleModalAccount(null);
       await fetchAccounts();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Không thể cập nhật vai trò');
+      const errorMsg = error.response?.data?.message 
+                    || error.response?.data?.error 
+                    || 'Không thể cập nhật vai trò';
+      alert(`⚠️ Cập nhật thất bại:\n\n${errorMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -229,9 +236,12 @@ export default function AccountsPage() {
       });
 
       await fetchAccounts();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Không thể thu hồi quyền tài khoản');
+      const errorMsg = error.response?.data?.message 
+                    || error.response?.data?.error 
+                    || 'Không thể thu hồi quyền tài khoản';
+      alert(`⚠️ Thu hồi quyền thất bại:\n\n${errorMsg}`);
     } finally {
       setSubmitting(false);
     }
@@ -357,7 +367,7 @@ export default function AccountsPage() {
                         className="rounded-xl border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-100"
                         title="Xem chi tiết"
                       >
-                        <User size={18} />
+                        <Eye size={18} />
                       </button>
 
                       <button
@@ -543,7 +553,7 @@ function RoleModal({
               <div>
                 <p className="font-black text-amber-800">Lưu ý phân quyền</p>
                 <p className="mt-1 text-sm font-medium leading-6 text-amber-700">
-                  Vai trò hiện tại là <b>{getRoleLabel(currentRole)}</b>. Khi đổi vai trò, người dùng sẽ có quyền truy cập menu và API tương ứng với vai trò mới.
+                  Vai trò hiện tại là <b>{getRoleLabel(currentRole)}</b>. Khi đổi vai trò, người dùng sẽ có quyền truy cập tương ứng với vai trò mới.
                 </p>
               </div>
             </div>

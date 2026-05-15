@@ -138,9 +138,9 @@ export default function SalaryPage() {
 
             <div className="p-8">
               <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-6">
-                <p className="text-xs font-black uppercase tracking-widest text-emerald-600">Lương hiện tại</p>
+                <p className="text-xs font-black uppercase tracking-widest text-emerald-600">Lương của bạn</p>
                 <p className="mt-2 text-4xl font-black text-emerald-700">{formatMoney(salary)}</p>
-                <p className="mt-2 text-sm font-semibold text-emerald-700">Dữ liệu được lấy theo quyền truy cập hiện có.</p>
+               
               </div>
 
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -157,7 +157,7 @@ export default function SalaryPage() {
               <Calculator className="mb-5 h-10 w-10 text-blue-300" />
               <p className="text-xs font-black uppercase tracking-widest text-slate-400">Ghi chú</p>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-200">
-                Nhân viên chỉ xem được thông tin lương của chính mình. Các thông tin chi tiết khác phụ thuộc vào backend.
+                Nhân viên chỉ xem được thông tin lương của chính mình. 
               </p>
             </div>
           </div>

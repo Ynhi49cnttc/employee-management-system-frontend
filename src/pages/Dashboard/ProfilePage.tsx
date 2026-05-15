@@ -283,7 +283,7 @@ export default function ProfilePage() {
                 <Wallet size={24} />
               </div>
               <div>
-                <p className="text-xs font-black uppercase tracking-widest text-emerald-700">Lương cơ bản</p>
+                <p className="text-xs font-black uppercase tracking-widest text-emerald-700">Lương</p>
                 <p className="mt-1 text-3xl font-black text-emerald-900">{formatMoney(employee.luongCoBan)}</p>
               </div>
             </div>
