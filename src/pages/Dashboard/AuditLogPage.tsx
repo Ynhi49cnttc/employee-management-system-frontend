@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import api from '@/utils/axios';
 import {
   Activity,
   AlertTriangle,
   CalendarClock,
-  CheckCircle2,
   Clock,
   Database,
   FileText,
@@ -36,12 +35,19 @@ const normalizeAction = (action: any) => String(action || '').toUpperCase();
 
 const formatDateTime = (value: any) => {
   if (!value) return 'Chưa có dữ liệu';
-
   const date = new Date(value);
-
   if (Number.isNaN(date.getTime())) return 'Chưa có dữ liệu';
-
-  return date.toLocaleString('vi-VN');
+  
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const yyyy = date.getFullYear();
+  
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  const ms = String(date.getMilliseconds()).padStart(3, '0');
+  
+  return `${hh}:${min}:${ss}.${ms} - ${dd}/${mm}/${yyyy}`;
 };
 
 const getActionMeta = (action: any) => {
@@ -89,6 +95,15 @@ const getActionMeta = (action: any) => {
       icon: <ShieldCheck size={15} />,
       badge: 'bg-amber-50 text-amber-700 ring-amber-100',
       dot: 'bg-amber-500',
+    };
+  }
+
+  if (value.includes('LOCK_ACCOUNT') || value.includes('KHÓA')) {
+    return {
+      label: 'Khóa tài khoản',
+      icon: <AlertTriangle size={15} />,
+      badge: 'bg-red-50 text-red-700 ring-red-100',
+      dot: 'bg-red-500',
     };
   }
 
@@ -213,11 +228,12 @@ export default function AuditLogPage() {
               className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             >
               <option value="ALL">Tất cả hành động</option>
-              <option value="ADD">Thêm mới</option>
+              <option value="INSERT">Thêm mới</option>
               <option value="UPDATE">Cập nhật</option>
               <option value="DELETE">Xóa dữ liệu</option>
               <option value="LOGIN">Đăng nhập</option>
               <option value="ROLE">Phân quyền</option>
+              <option value="LOCK_ACCOUNT">Khóa/Mở tài khoản</option>
             </select>
           </div>
         </div>
@@ -318,12 +334,30 @@ function AuditDetailModal({ log, onClose }: { log: AuditLog; onClose: () => void
   const content = getValue(log, ['NoiDung', 'description', 'ChiTiet', 'content'], 'Không có mô tả');
   const time = getValue(log, ['ThoiGian', 'createdAt', 'CreatedAt', 'timestamp'], '');
   const target = getValue(log, ['TargetName', 'TargetId', 'DoiTuongAnhHuong', 'targetName', 'targetId'], 'Chưa cập nhật');
-  const tableName = getValue(log, ['TableName', 'tableName', 'BangDuLieu'], 'Chưa cập nhật');
+  const tableName = getValue(log, ['TableName', 'tableName', 'BangDuLieu', 'BangBiTacDong'], 'Chưa cập nhật');
   const logId = getValue(log, ['MaLog', 'id', 'LogId', 'logId'], '---');
+
+  // Lấy thêm 3 trường quan trọng để so sánh dữ liệu
+  const columnName = getValue(log, ['CotBiThayDoi', 'cotBiThayDoi'], 'Không xác định');
+  const oldValue = getValue(log, ['GiaTriCu', 'giaTriCu'], 'null');
+  const newValue = getValue(log, ['GiaTriMoi', 'giaTriMoi'], 'null');
+
+  // Hàm hỗ trợ format text thành JSON (nếu chuỗi gốc là JSON thì làm đẹp, nếu là text thường thì giữ nguyên)
+  const formatCode = (val: string) => {
+    if (val === null || val === undefined || val === 'null' || val === '') return 'null';
+    try {
+      const jsonObj = JSON.parse(val);
+      return JSON.stringify(jsonObj, null, 2);
+    } catch (e) {
+      return val;
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl animate-in zoom-in-95 duration-200">
+      <div className="w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl animate-in zoom-in-95 duration-200">
+        
+        {/* Header Modal */}
         <div className="relative bg-slate-900 px-8 py-8 text-white">
           <button
             onClick={onClose}
@@ -333,13 +367,13 @@ function AuditDetailModal({ log, onClose }: { log: AuditLog; onClose: () => void
           </button>
 
           <div className="flex flex-col gap-5 md:flex-row md:items-center">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-3xl border-4 border-slate-700 bg-blue-600 text-white shadow-xl">
-              <History size={38} />
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border-4 border-slate-700 bg-blue-600 text-white shadow-xl">
+              <History size={32} />
             </div>
 
             <div className="min-w-0 flex-1">
               <p className="text-xs font-black uppercase tracking-widest text-blue-300">Chi tiết nhật ký hệ thống</p>
-              <h3 className="mt-1 text-3xl font-black text-white">Log #{logId}</h3>
+              <h3 className="mt-1 text-2xl font-black text-white">Log #{logId}</h3>
               <p className="mt-2 flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-300">
                 <span>{actor}</span>
                 <span>•</span>
@@ -354,37 +388,64 @@ function AuditDetailModal({ log, onClose }: { log: AuditLog; onClose: () => void
           </div>
         </div>
 
-        <div className="p-6">
+        {/* Nội dung chi tiết */}
+        <div className="max-h-[70vh] overflow-y-auto p-6">
+          
+          {/* Thông tin mô tả gốc */}
           <div className="mb-6 rounded-3xl border border-slate-200 bg-slate-50 p-5">
-            <p className="mb-2 text-xs font-black uppercase tracking-widest text-slate-400">Nội dung thao tác</p>
-            <p className="text-base font-semibold leading-7 text-slate-800">{content}</p>
+            <p className="mb-2 text-xs font-black uppercase tracking-widest text-slate-400">Nội dung tóm tắt</p>
+            <p className="text-base font-semibold text-slate-800">{content}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <DetailItem label="Người thực hiện" value={actor} icon={<User size={14} />} />
-            <DetailItem label="Hành động gốc" value={action} icon={<Activity size={14} />} />
-            <DetailItem label="Đối tượng ảnh hưởng" value={target} icon={<AlertTriangle size={14} />} />
-            <DetailItem label="Thời gian" value={formatDateTime(time)} icon={<CalendarClock size={14} />} />
-            <DetailItem label="Bảng dữ liệu" value={tableName} icon={<Database size={14} />} />
-          </div>
+          {/* HIỂN THỊ TRẠNG THÁI TRƯỚC - SAU */}
+          <div className="mb-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h4 className="text-sm font-black uppercase tracking-widest text-slate-700">Chi tiết dữ liệu thay đổi</h4>
+              <span className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600 ring-1 ring-blue-200">
+                Cột tác động: {columnName}
+              </span>
+            </div>
 
-          <div className="mt-6 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
-              <div>
-                <p className="font-black text-emerald-800">Audit trail đã được ghi nhận</p>
-                <p className="mt-1 text-sm font-medium leading-6 text-emerald-700">
-                  Thông tin này dùng để truy vết thao tác trong hệ thống và hỗ trợ kiểm tra trách nhiệm người dùng.
-                </p>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {/* Box Trạng thái trước */}
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-sm">
+                <div className="border-b border-slate-700 bg-slate-800 px-4 py-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-300">Trạng thái trước</p>
+                </div>
+                <div className="p-4">
+                  <pre className="whitespace-pre-wrap font-mono text-sm font-medium leading-relaxed text-red-400">
+                    {formatCode(oldValue)}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Box Trạng thái sau */}
+              <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-sm">
+                <div className="border-b border-slate-700 bg-slate-800 px-4 py-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-300">Trạng thái sau</p>
+                </div>
+                <div className="p-4">
+                  <pre className="whitespace-pre-wrap font-mono text-sm font-medium leading-relaxed text-emerald-400">
+                    {formatCode(newValue)}
+                  </pre>
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Các thông tin phụ */}
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <DetailItem label="Người thực hiện" value={actor} icon={<User size={14} />} />
+            <DetailItem label="Đối tượng ảnh hưởng" value={target} icon={<AlertTriangle size={14} />} />
+            <DetailItem label="Bảng dữ liệu" value={tableName} icon={<Database size={14} />} />
+            <DetailItem label="Thời gian hệ thống" value={formatDateTime(time)} icon={<CalendarClock size={14} />} />
+          </div>
+
         </div>
       </div>
     </div>
   );
 }
-
 function StatCard({
   label,
   value,

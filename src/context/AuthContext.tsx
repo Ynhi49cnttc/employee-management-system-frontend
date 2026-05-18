@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error("Không lấy được profile:", error);
-      logout(); // Nếu token lỏ thì đuổi ra ngoài luôn
+      logout(); 
     }
   };
 

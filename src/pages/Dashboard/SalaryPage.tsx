@@ -146,7 +146,7 @@ export default function SalaryPage() {
               <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <InfoCard label="Mã nhân viên" value={maNV} icon={<BadgeCheck size={16} />} />
                 <InfoCard label="Mã số thuế" value={taxCode} icon={<CreditCard size={16} />} />
-                <InfoCard label="Phòng ban" value={department} icon={<Building2 size={16} />} />
+                {/* <InfoCard label="Phòng ban" value={department} icon={<Building2 size={16} />} /> */}
                 <InfoCard label="Quyền xem" value="Lương cá nhân" icon={<ShieldCheck size={16} />} />
               </div>
             </div>
@@ -295,7 +295,6 @@ function SalaryDetailModal({ employee, onClose }: { employee: Employee; onClose:
         <div className="space-y-4 p-6">
           <InfoCard label="Lương" value={formatMoney(salary)} icon={<Wallet size={16} />} />
           <InfoCard label="Mã số thuế" value={tax} icon={<CreditCard size={16} />} />
-          <InfoCard label="Phòng ban" value={department} icon={<Building2 size={16} />} />
           <InfoCard label="Quyền truy cập" value="Finance / HRM" icon={<ShieldCheck size={16} />} />
         </div>
       </div>

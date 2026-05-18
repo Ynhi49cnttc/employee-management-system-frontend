@@ -18,6 +18,7 @@ import {
   Crown,
   Eye,
 } from 'lucide-react';
+import { FiRotateCcw } from "react-icons/fi";
 
 type Account = Record<string, any>;
 
@@ -383,7 +384,7 @@ export default function AccountsPage() {
                         className="rounded-xl border border-amber-200 bg-amber-50 p-2 text-amber-600 transition hover:bg-amber-100"
                         title="Thu hồi quyền"
                       >
-                        <AlertTriangle size={18} />
+                        <FiRotateCcw size={18} />
                       </button>
 
                       <button

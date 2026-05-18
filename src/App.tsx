@@ -11,6 +11,7 @@ import HRManagementPage from '@/pages/Dashboard/HRManagementPage';
 import AccountsPage from '@/pages/Dashboard/AccountsPage';
 import AuditLogPage from '@/pages/Dashboard/AuditLogPage';
 import ManagerDepartmentPage from '@/pages/Dashboard/ManagerDepartmentPage';
+import HRDepartmentsPage from '@/pages/Dashboard/HRDepartmentsPage';
 
 interface ProtectedRouteProps {
   children: ReactNode; 
@@ -92,6 +93,13 @@ function App() {
               <DashboardLayout>
                 <ManagerDepartmentPage />
               </DashboardLayout>
+            </ProtectedRoute>
+          } />
+
+          {/* Trang Quản lý phòng ban  */}
+          <Route path="/dashboard/hr-departments" element={
+            <ProtectedRoute allowedRoles={['HRM']}>
+              <DashboardLayout><HRDepartmentsPage /></DashboardLayout>
             </ProtectedRoute>
           } />
 
